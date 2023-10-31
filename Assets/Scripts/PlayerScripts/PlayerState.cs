@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class PlayerState : MonoBehaviour
 {
-    public enum States
+    public enum FightStates
     {
-        fighting,
-        roaming,
+        Fighting,
+        Roaming,
     }
+    public static FightStates fightState = FightStates.Roaming;
 }

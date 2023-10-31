@@ -1,13 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
 
-public class PlayerFighting : MonoBehaviour
+public class PlayerFighting : PlayerState
 {
     [SerializeField]
     GameObject fightingSquare;
-    [SerializeField]
-    Sprite changeForm;
 
     float timer = 1f;
     float moveTimer = 2.5f;
@@ -16,18 +15,20 @@ public class PlayerFighting : MonoBehaviour
     public bool isFighting = false;
     public bool endFight = false;
 
-    SpriteRenderer spriteRenderer;
     Rigidbody2D rb;
 
     private void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
     {
-        if (!isFighting)
+        if (fightState == FightStates.Roaming)
+        {
+            return;
+        }
+        else if (!isFighting)
         {
             ChangeForm();
         }
@@ -48,4 +49,6 @@ public class PlayerFighting : MonoBehaviour
         cantMove = false;
         isFighting = true;
     }
+
+
 }
