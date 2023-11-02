@@ -9,7 +9,7 @@ public class Node
     public Node parNode;
     public RectInt nodeRect;
     public RectInt roomRect;
-    public Vector2Int center
+    public Vector2Int Center
     {
         get
         {

@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Random = UnityEngine.Random;
 
 public class MapGenerator : MonoBehaviour
 {
@@ -16,6 +19,7 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] Tile roomTile; //방을 구성하는 타일
     [SerializeField] Tile wallTile; //방과 외부를 구분지어줄 벽 타일
     [SerializeField] Tile outTile; //방 외부의 타일
+    [SerializeField] GameObject player;
 
     void Start()
     {
@@ -61,6 +65,7 @@ public class MapGenerator : MonoBehaviour
     private RectInt GenerateRoom(Node tree, int n)
     {
         RectInt rect;
+
         if (n == maximumDepth) //해당 노드가 리프노드라면 방을 만들어 줄 것이다.
         {
             rect = tree.nodeRect;
@@ -83,13 +88,15 @@ public class MapGenerator : MonoBehaviour
         }
         return rect;
     }
+
     private void GenerateLoad(Node tree, int n)
     {
         if (n == maximumDepth) //리프 노드라면 이을 자식이 없다.
             return;
-        Vector2Int leftNodeCenter = tree.leftNode.center;
-        Vector2Int rightNodeCenter = tree.rightNode.center;
+        
 
+        Vector2Int leftNodeCenter = tree.leftNode.Center;
+        Vector2Int rightNodeCenter = tree.rightNode.Center;
         for (int i = Mathf.Min(leftNodeCenter.x, rightNodeCenter.x); i <= Mathf.Max(leftNodeCenter.x, rightNodeCenter.x); i++)
         {
             tileMap.SetTile(new Vector3Int(i - mapSize.x / 2, leftNodeCenter.y - mapSize.y / 2, 0), roomTile);
@@ -147,8 +154,8 @@ public class MapGenerator : MonoBehaviour
             for (int j = rect.y; j < rect.y + rect.height; j++)
             {
                 tileMap.SetTile(new Vector3Int(i - mapSize.x / 2, j - mapSize.y / 2, 0), roomTile);
+                player.transform.position = new Vector3Int(i - mapSize.x / 2, j - mapSize.y / 2, 0);
             }
         }
     }
-
 }
