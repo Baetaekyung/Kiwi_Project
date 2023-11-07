@@ -155,6 +155,11 @@ public class MapGenerator : MonoBehaviour
             {
                 tileMap.SetTile(new Vector3Int(i - mapSize.x / 2, j - mapSize.y / 2, 0), roomTile);
                 player.transform.position = new Vector3Int(i - mapSize.x / 2, j - mapSize.y / 2, 0);
+                int isSpawn = Random.Range(0, 10);
+                if(isSpawn == 0)
+                {
+                    EnemyGenerator.Instance.EnemySpawn(new Vector3Int(i - mapSize.x / 2, j - mapSize.y / 2, 0));
+                }
             }
         }
     }
