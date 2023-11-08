@@ -15,9 +15,13 @@ public class EnemyGenerator : Singleton<EnemyGenerator>
     public void EnemySpawn(Vector3 spawnPos)
     {
         int spawnEnemy = Random.Range(minimumEnemy, maximumEnemy);
-        for(int i = 0; i < spawnEnemy; i++)
+        int spawnOrNot = Random.Range(0, 6);
+        if(spawnOrNot == 3)
         {
-            Instantiate(enemies[0], spawnPos, Quaternion.identity);
+            for (int i = 0; i < spawnEnemy; i++)
+            {
+                Instantiate(enemies[0], spawnPos, Quaternion.identity);
+            }
         }
     }
 }

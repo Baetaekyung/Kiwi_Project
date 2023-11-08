@@ -16,9 +16,10 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] private GameObject roomLine; //lineRenderer를 사용해서 방의 사이즈를 보여주기 위함
     [SerializeField] private int maximumDepth; //트리의 높이, 높을 수록 방을 더 자세히 나누게 됨
     [SerializeField] Tilemap tileMap;
-    [SerializeField] Tile roomTile; //방을 구성하는 타일
-    [SerializeField] Tile wallTile; //방과 외부를 구분지어줄 벽 타일
+    [SerializeField] RuleTile roomTile; //방을 구성하는 타일
+    [SerializeField] RuleTile wallTile; //방과 외부를 구분지어줄 벽 타일
     [SerializeField] Tile outTile; //방 외부의 타일
+    [SerializeField] RuleTile roadTile;
     [SerializeField] GameObject player;
 
     void Start()
@@ -99,12 +100,12 @@ public class MapGenerator : MonoBehaviour
         Vector2Int rightNodeCenter = tree.rightNode.Center;
         for (int i = Mathf.Min(leftNodeCenter.x, rightNodeCenter.x); i <= Mathf.Max(leftNodeCenter.x, rightNodeCenter.x); i++)
         {
-            tileMap.SetTile(new Vector3Int(i - mapSize.x / 2, leftNodeCenter.y - mapSize.y / 2, 0), roomTile);
+            tileMap.SetTile(new Vector3Int(i - mapSize.x / 2, leftNodeCenter.y - mapSize.y / 2, 0), roadTile);
         }
 
         for (int j = Mathf.Min(leftNodeCenter.y, rightNodeCenter.y); j <= Mathf.Max(leftNodeCenter.y, rightNodeCenter.y); j++)
         {
-            tileMap.SetTile(new Vector3Int(rightNodeCenter.x - mapSize.x / 2, j - mapSize.y / 2, 0), roomTile);
+            tileMap.SetTile(new Vector3Int(rightNodeCenter.x - mapSize.x / 2, j - mapSize.y / 2, 0), roadTile);
         }
         //이전 포스팅에서 선으로 만들었던 부분을 room tile로 채우는 과정
         GenerateLoad(tree.leftNode, n + 1); //자식 노드들도 탐색
@@ -153,13 +154,10 @@ public class MapGenerator : MonoBehaviour
         {
             for (int j = rect.y; j < rect.y + rect.height; j++)
             {
+                
                 tileMap.SetTile(new Vector3Int(i - mapSize.x / 2, j - mapSize.y / 2, 0), roomTile);
                 player.transform.position = new Vector3Int(i - mapSize.x / 2, j - mapSize.y / 2, 0);
-                int isSpawn = Random.Range(0, 10);
-                if(isSpawn == 0)
-                {
-                    EnemyGenerator.Instance.EnemySpawn(new Vector3Int(i - mapSize.x / 2, j - mapSize.y / 2, 0));
-                }
+                EnemyGenerator.Instance.EnemySpawn(new Vector3(i - mapSize.x / 2 + 1, j - mapSize.y / 2 + 1, 0));
             }
         }
     }
