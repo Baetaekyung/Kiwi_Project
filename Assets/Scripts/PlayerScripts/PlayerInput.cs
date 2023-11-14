@@ -6,14 +6,21 @@ using UnityEngine;
 public class PlayerInput : MonoBehaviour
 {
     public Action<Vector2> onMovementChanged;
+    public Action<Vector3> onMouseDirectionChanged;
     public Action<Vector2> onDash;
+    public Action onAttack;
+    public Action onShield;
 
     private float horizontal, vertical;
     public Vector3 moveDirection = Vector3.zero;
+    public Vector3 mouseDirection = Vector3.zero;
 
     private void Update()
     {
         MoveInput();
+        MouseDirInput();
+        AttackInput();
+        ShieldInput();
     }
 
    private void MoveInput()
@@ -29,4 +36,28 @@ public class PlayerInput : MonoBehaviour
         }
         onMovementChanged?.Invoke(moveDirection);
     }
+
+    private void MouseDirInput()
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseDirection = (mousePos - transform.position).normalized;
+        onMouseDirectionChanged?.Invoke(mouseDirection);
+    }
+
+    private void AttackInput()
+    {
+        if (Input.GetMouseButton(0))
+        {
+            onAttack?.Invoke();
+        }
+    }
+
+    private void ShieldInput()
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            onShield?.Invoke();
+        }
+    }
 }
+

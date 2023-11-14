@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float invisibleTime;
     [SerializeField] Collider2D myCol;
 
+    Vector3 pMinusScale;
     public bool canDash;
     private WaitForSeconds dashWfs;
     private WaitForSeconds invisibleWfs;
@@ -28,6 +29,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        pMinusScale = new Vector3(-1, 1, 1);
         dashWfs = new WaitForSeconds(dashCooltime);
         invisibleWfs = new WaitForSeconds(invisibleTime);
         canDash = true;
@@ -36,6 +38,13 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         inputs.onMovementChanged += PlayerMovement;
+        inputs.onMouseDirectionChanged += FaceMouseDir;
+    }
+
+    private void OnDestroy()
+    {
+        inputs.onMovementChanged -= PlayerMovement;
+        inputs.onMouseDirectionChanged -= FaceMouseDir;
     }
 
     private void Update()
@@ -43,15 +52,24 @@ public class PlayerController : MonoBehaviour
         PlayerDash();
     }
 
-    private void OnDestroy()
-    {
-        inputs.onMovementChanged -= PlayerMovement;
-    }
-
     private void PlayerMovement(Vector2 direction)
     {
         myRigid.velocity = direction * playerMoveSpeed;
     }
+
+    private void FaceMouseDir(Vector3 mouseDir)
+    {
+        Vector3 resultDir = Vector3.Cross(Vector3.up, mouseDir);
+        if(resultDir.z < 0)
+        {
+            transform.localScale = Vector3.one;
+        }
+        else if(resultDir.z > 0)
+        {
+            transform.localScale = pMinusScale;
+        }
+    }
+
     private void PlayerDash()
     {
         if (Input.GetKeyDown(KeyCode.LeftShift))
@@ -62,8 +80,7 @@ public class PlayerController : MonoBehaviour
                 myCol.enabled = false;
                 StartCoroutine("CanDashRoutine");
                 StartCoroutine("InvisibleTimeRoutine");
-                myRigid.velocity = Vector2.zero;
-                myRigid.DOMove(transform.position + inputs.moveDirection
+                myRigid.DOMove(transform.position + inputs.mouseDirection
                     * dashSpeed, 0.3f);
             }
         }      

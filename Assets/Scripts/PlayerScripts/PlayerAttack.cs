@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
-    private void Update()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (Input.GetMouseButton(0))
+        if (collision.GetComponent<Enemy>())
         {
-
-        }        
+            collision.gameObject.SetActive(false);
+        }
     }
 }

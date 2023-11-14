@@ -4,50 +4,79 @@ using UnityEngine;
 
 public class PlayerAnimations : MonoBehaviour
 {
+    [SerializeField] private float shieldCoolTime = 5f;
+    [SerializeField] private GameObject col;
+    private bool canAttack = false;
+    private bool canShield = false;
+
+    WaitForSeconds shieldWfs;
+
     PlayerInput inputs;
     Animator animator;
 
     private void Awake()
     {
         inputs = GetComponent<PlayerInput>();
-        animator = GetComponent<Animator>();
+        animator = GetComponent<Animator>();       
     }
-
-    private void Update()
+    private void Start()
     {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            PlayerDieAnim();
-        }
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            Respawn();
-        }
+        canAttack = true;
+        canShield = true;
+        shieldWfs = new WaitForSeconds(shieldCoolTime);
+        col.SetActive(false);
     }
 
     private void OnEnable()
     {
         inputs.onMovementChanged += AnimationPlayer;
+        inputs.onAttack += PlayerAttack;
+        inputs.onShield += PlayerShield;
     }
 
     private void OnDestroy()
     {
         inputs.onMovementChanged -= AnimationPlayer;
+        inputs.onAttack -= PlayerAttack;
+        inputs.onShield -= PlayerShield;
     }
 
     private void AnimationPlayer(Vector2 direction)
     {
-        animator.SetFloat("velocity_x", direction.x);
-        animator.SetFloat("velocity_y", direction.y);
+        animator.SetFloat("ismove", direction.magnitude);
+    }
+    private void PlayerAttack()
+    {
+        if (canAttack)
+        {
+            animator.SetTrigger("attack");
+            canAttack = false;
+        }
     }
 
-    private void PlayerDieAnim()
+    private void PlayerShield()
     {
-        animator.SetTrigger("death");
+        if (canShield)
+        {
+            animator.SetTrigger("shield");
+            StartCoroutine("ShieldCoolTime");
+            canShield = false;
+        }
     }
 
-    private void Respawn()
+    public void AttackEndEvent()
     {
-        animator.SetTrigger("respawn");
+        canAttack = true;
+        col.SetActive(false);
+    }
+    public void AttackStartEvent()
+    {
+        col.SetActive(true);
+    }
+
+    IEnumerator ShieldCoolTime()
+    {
+        yield return shieldWfs;
+        canShield = true;
     }
 }
