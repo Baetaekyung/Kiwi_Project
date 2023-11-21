@@ -1,32 +1,44 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class Enemy_Goblin : Enemy
 {
-    SpriteRenderer sp;
+    [SerializeField] Vector3 monsterScale;
+    [SerializeField] Vector3 flipScale;
     Rigidbody2D rb;
     WaitForSeconds dirWfs;
+
     int r, u;
     private void Awake()
     {
-        sp = this.gameObject.GetComponent<SpriteRenderer>();
         rb = this.gameObject.GetComponent<Rigidbody2D>();
         dirWfs = new WaitForSeconds(0.8f);
     }
 
-    public void IsHit(int damage)
+    private void Death()
     {
         if(hp <= 0)
         {
-            Death();
+            Destroy(gameObject);
+            isDead = true;
         }
-        hp -= damage;
     }
-    private void Death()
+
+    public void AttackEvent()
     {
-        Destroy(gameObject);
-        isDead = true;
+        Collider2D hitBox = Physics2D.OverlapBox(transform.position, Vector2.one, LayerMask.GetMask("HitBox"));
+        if (hitBox && GameManager.Instance.isInvisible == 0)
+        {
+            PlayerHealth.Instance.PlayerHit();
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(transform.position, Vector2.one);
     }
     private void Update()
     {
@@ -35,6 +47,7 @@ public class Enemy_Goblin : Enemy
             StartCoroutine(FindDir());
             Ai((speed * 0.9f), rb, r, u);
         }
+        Death();
     }
     IEnumerator FindDir()
     {
@@ -49,11 +62,11 @@ public class Enemy_Goblin : Enemy
             FindPlayer(collision.transform, rb);
             if (collision.transform.position.x > transform.position.x)
             {
-                sp.flipX = false;
+                transform.localScale = monsterScale;
             }
             else
             {
-                sp.flipX = true;
+                transform.localScale = flipScale;
             }
         }
     }

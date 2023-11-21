@@ -46,7 +46,7 @@ public class PlayerInput : MonoBehaviour
 
     private void AttackInput()
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButtonDown(0))
         {
             onAttack?.Invoke();
         }

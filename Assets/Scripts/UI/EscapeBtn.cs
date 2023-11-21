@@ -29,17 +29,25 @@ public class EscapeBtn : BottonClick, IBottonClick
         {
             isclicked = !isclicked;
         }
+        if (!isclicked)
+        {
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            Time.timeScale = 1f;
+        }
     }
 
     public void KeyBoardBtnClick()
     {
         if (Input.GetKeyDown(KeyCode.Escape) && isclicked)
         {
-            panel.transform.DOScaleX(panelXScale, panelOpenTime);
+            panel.transform.DOScaleX(panelXScale, panelOpenTime).SetUpdate(true);   
         }
         if(Input.GetKeyDown(KeyCode.Escape) && !isclicked)
         {
-            panel.transform.DOScaleX(0f, panelOpenTime);
+            panel.transform.DOScaleX(0f, panelOpenTime).SetUpdate(true);            
         }
     }
 }

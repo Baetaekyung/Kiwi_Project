@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerAnimations : MonoBehaviour
 {
     [SerializeField] private float shieldCoolTime = 5f;
+    [SerializeField] private float InvisibleTime = 1.5f;
     [SerializeField] private GameObject col;
-    private bool canAttack = false;
+    [SerializeField] private bool canAttack = false;
     private bool canShield = false;
 
     WaitForSeconds shieldWfs;
@@ -59,24 +61,48 @@ public class PlayerAnimations : MonoBehaviour
         if (canShield)
         {
             animator.SetTrigger("shield");
+            GameManager.Instance.isInvisible = 1;
+            StartCoroutine(InvisibleRoutine());
             StartCoroutine("ShieldCoolTime");
             canShield = false;
         }
     }
 
+    private void Update()
+    {
+        StartCoroutine(AttackCoolTime());
+    }
+
+    IEnumerator InvisibleRoutine()
+    {
+        yield return new WaitForSeconds(InvisibleTime);
+        GameManager.Instance.isInvisible = 0;
+    }
+
     public void AttackEndEvent()
     {
-        canAttack = true;
+        animator.SetTrigger("attackFin");
         col.SetActive(false);
     }
     public void AttackStartEvent()
     {
         col.SetActive(true);
     }
-
+    public void ShieldFinEvent()
+    {
+        animator.SetTrigger("shieldFin");
+    }
     IEnumerator ShieldCoolTime()
     {
         yield return shieldWfs;
         canShield = true;
+    }
+    IEnumerator AttackCoolTime()
+    {
+        if (!canAttack)
+        {
+            yield return new WaitForSeconds(0.3f);
+            canAttack = true;
+        }
     }
 }

@@ -10,13 +10,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float playerMoveSpeed;
     [SerializeField] private float dashSpeed;
     [SerializeField] private float dashCooltime;
-    [SerializeField] private float invisibleTime;
-    [SerializeField] Collider2D myCol;
+    [SerializeField] private float dashIvitime;
 
     Vector3 pMinusScale;
     public bool canDash;
     private WaitForSeconds dashWfs;
-    private WaitForSeconds invisibleWfs;
+    private WaitForSeconds dashIvi;
 
     PlayerInput inputs;
     Rigidbody2D myRigid;
@@ -31,7 +30,7 @@ public class PlayerController : MonoBehaviour
     {
         pMinusScale = new Vector3(-1, 1, 1);
         dashWfs = new WaitForSeconds(dashCooltime);
-        invisibleWfs = new WaitForSeconds(invisibleTime);
+        dashIvi = new WaitForSeconds(dashIvitime);
         canDash = true;
     }
 
@@ -77,10 +76,10 @@ public class PlayerController : MonoBehaviour
             if (canDash)
             {
                 canDash = false;
-                myCol.enabled = false;
+                GameManager.Instance.isInvisible = 1;
                 StartCoroutine("CanDashRoutine");
-                StartCoroutine("InvisibleTimeRoutine");
-                myRigid.DOMove(transform.position + inputs.mouseDirection
+                StartCoroutine("DashIvisibleRoutine");
+                myRigid.DOMove(transform.position + inputs.moveDirection
                     * dashSpeed, 0.3f);
             }
         }      
@@ -91,9 +90,9 @@ public class PlayerController : MonoBehaviour
         yield return dashWfs;
         canDash = true;
     }
-    IEnumerator InvisibleTimeRoutine()
+    IEnumerator DashIvisibleRoutine()
     {
-        yield return invisibleWfs;
-        myCol.enabled = true;
+        yield return dashIvi;
+        GameManager.Instance.isInvisible = 0;
     }
 }

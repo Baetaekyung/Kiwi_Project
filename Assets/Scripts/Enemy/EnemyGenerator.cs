@@ -11,6 +11,13 @@ public class EnemyGenerator : Singleton<EnemyGenerator>
     private int maximumEnemy;
     [SerializeField]
     private int minimumEnemy;
+    [SerializeField]
+    private GameObject ghost;
+
+    private void Start()
+    {
+        GhostSpawn();
+    }
 
     public void EnemySpawn(Vector3 spawnPos)
     {
@@ -23,5 +30,9 @@ public class EnemyGenerator : Singleton<EnemyGenerator>
                 Instantiate(enemies[0], spawnPos, Quaternion.identity);
             }
         }
+    }
+    public void GhostSpawn()
+    {
+        Instantiate(ghost, Vector3.zero, Quaternion.identity);
     }
 }

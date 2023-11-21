@@ -8,7 +8,7 @@ using UnityEngine.Pool;
 public class PoolManager : Singleton<PoolManager>
 {
     [System.Serializable]
-    private class WeaponInfo
+    private class info
     {
         public string weaponName;
         public GameObject weaponPrefab;
@@ -16,12 +16,12 @@ public class PoolManager : Singleton<PoolManager>
     }
     public bool isReady { get; private set; }
     [SerializeField]
-    private WeaponInfo[] weaponInfos = null;
+    private info[] infos = null;
 
     private string weaponName;
 
     private Dictionary<string, IObjectPool<GameObject>>
-        weaponDictionary = new Dictionary<string, IObjectPool<GameObject>>();
+        dictionary = new Dictionary<string, IObjectPool<GameObject>>();
     private Dictionary<string, GameObject> gameObjectDictionary = 
         new Dictionary<string, GameObject>();
 
@@ -33,24 +33,24 @@ public class PoolManager : Singleton<PoolManager>
     {
         isReady = false;
 
-        for(int idx = 0; idx < weaponInfos.Length; idx++)
+        for(int idx = 0; idx < infos.Length; idx++)
         {
             IObjectPool<GameObject> pool = new ObjectPool<GameObject>(CreateNewObject, OnGetPoolObject,
-                OnReleasePoolObject, OnDestroyPoolObject, true, weaponInfos[idx].count, 
-                weaponInfos[idx].count);
+                OnReleasePoolObject, OnDestroyPoolObject, true, infos[idx].count, 
+                infos[idx].count);
 
-            if (gameObjectDictionary.ContainsKey(weaponInfos[idx].weaponName))
+            if (gameObjectDictionary.ContainsKey(infos[idx].weaponName))
             {
                 Debug.Log("Already Assigned");
             }
 
-            gameObjectDictionary.Add(weaponInfos[idx].weaponName,
-                weaponInfos[idx].weaponPrefab);
-            weaponDictionary.Add(weaponInfos[idx].weaponName, pool);
+            gameObjectDictionary.Add(infos[idx].weaponName,
+                infos[idx].weaponPrefab);
+            dictionary.Add(infos[idx].weaponName, pool);
 
-            for(int i = 0; i < weaponInfos[idx].count; i++)
+            for(int i = 0; i < infos[idx].count; i++)
             {
-                weaponName = weaponInfos[idx].weaponName;
+                weaponName = infos[idx].weaponName;
                 Poolable poolable = CreateNewObject().GetComponent<Poolable>();
                 poolable.pool.Release(poolable.gameObject);
             }
@@ -69,14 +69,14 @@ public class PoolManager : Singleton<PoolManager>
         obj.SetActive(false);
     }
 
-    private void OnGetPoolObject(GameObject obj)
+    public void OnGetPoolObject(GameObject obj)
     {
         obj.SetActive(true);
     }
     private GameObject CreateNewObject()
     {
         GameObject newObject = Instantiate(gameObjectDictionary[weaponName]);
-        newObject.GetComponent<Poolable>().pool = weaponDictionary[weaponName];
+        newObject.GetComponent<Poolable>().pool = dictionary[weaponName];
         return newObject;
     }
 }

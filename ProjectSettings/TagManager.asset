@@ -6,14 +6,16 @@ TagManager:
   tags:
   - Enemy
   - Wall
+  - GobAtkRange
+  - HitBox
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
-  - 
+  - HitBox
   - 
   - 
   - 
@@ -42,4 +44,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: UI
+    uniqueID: 4103113127
     locked: 0
